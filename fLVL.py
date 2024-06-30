@@ -8,13 +8,13 @@ import cv2
 
 
 
-def fLVL(A):
-    # Convert A to double
-    A = A.astype(float)
-    sz = A.shape
+def LvL(cloud_mask):
+    # Convert cloud_mask to double
+    cloud_mask = cloud_mask.astype(float)
+    sz = cloud_mask.shape
     mnsz = min(sz)  # minimum scale of the field
-    szA = sz[0] * sz[1]
-    p = np.sum(A) / szA  # cloud fraction
+    sz_cloud_mask = sz[0] * sz[1]
+    p = np.sum(cloud_mask) / sz_cloud_mask  # cloud fraction
 
     # estimating the ideal length to capture almost 100% of the histogram
     # we want that the error < exp(-12) for the perfect rand case
@@ -25,8 +25,8 @@ def fLVL(A):
     # Flatenning along the two directions
     # then we need to divide c1 and c2 by two
     
-    B = A.flatten()  # rows
-    C = A.flatten(order='F') #columns 
+    B = cloud_mask.flatten()  # rows
+    C = cloud_mask.flatten(order='F') #columns 
     B = np.concatenate((C, B))
     
     L, num_labels = label(B)
@@ -52,7 +52,7 @@ def fLVL(A):
     
     # Now, the theortical calculations ct, nt for a given cloud fraction (p)
     nt1 = np.arange(1, mxln + 1)
-    ct1 = (szA * (1 - p) ** 2) * p ** nt1
+    ct1 = (sz_cloud_mask * (1 - p) ** 2) * p ** nt1
     st1 = np.sum(ct1)
     nt1 = nt1.astype(int)
     
@@ -87,7 +87,7 @@ def fLVL(A):
     s2 = np.sum(c2)
 
     nt2 = np.arange(1, mxln + 1)
-    ct2 = (szA * (1 - q) ** 2) * q ** nt2
+    ct2 = (sz_cloud_mask * (1 - q) ** 2) * q ** nt2
     st2 = np.sum(ct2)
     nt2 = nt2.astype(int)
     
